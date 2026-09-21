@@ -18,14 +18,19 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);background:
+  radial-gradient(circle at 8% 28%,rgba(58,78,128,.1),transparent 28rem),
+  radial-gradient(circle at 94% 62%,rgba(243,146,32,.09),transparent 30rem),
+  linear-gradient(180deg,#F3F5F9 0%,#F8FAFD 48%,#E9EEF7 100%);color:var(--ink);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 .num{font-variant-numeric:tabular-nums}
 
 /* ---------- 查詢區（頁首） ---------- */
-.hero{background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;padding:40px 0 0;overflow:hidden}
+.hero{position:relative;background:linear-gradient(135deg,var(--navy) 0%,#102956 58%,var(--navy-2) 100%);color:#fff;padding:40px 0 0;overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;z-index:-1;inset:-12% -2% 0 42%;background:url("教學部-LOGO(寶藍).png") center/contain no-repeat;opacity:.18;filter:brightness(0) invert(1);pointer-events:none}
+.hero::after{content:"";position:absolute;z-index:-2;inset:auto 0 0;height:46%;background:linear-gradient(180deg,transparent,rgba(58,78,128,.32));pointer-events:none}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start}
 .stats-panel{display:grid;gap:10px}
 .yearpick{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px}
@@ -119,15 +124,17 @@ td .muted{color:var(--muted)}
 .chip{display:inline-block;padding:4px 12px;border-radius:999px;font-size:14px;font-weight:500}
 .chip.course{background:var(--navy);color:#fff}
 .chip.dept{background:#fff;border:1px solid var(--orange-2);color:var(--orange-ink)}
-footer{margin:64px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer{margin-top:64px;padding:30px 0 34px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);border-top:4px solid var(--orange);font-size:14px;color:#D4DBEA;box-shadow:0 -12px 34px rgba(11,26,58,.12)}
 footer p{margin:0 0 6px;max-width:60em}
-footer strong{color:var(--ink)}
+footer p:last-child{margin-bottom:0}
+footer strong{color:#fff;font-size:15px}
 
 .loading{color:#AEB9D3}
 @media (max-width:720px){
   .wrap{padding:0 16px}
   .hero{padding:28px 0 0}
   .hero-grid{grid-template-columns:1fr;gap:20px}
+  .hero::before{inset:0 -28% 32% 30%;opacity:.13}
   .stats{grid-template-columns:repeat(3,1fr);gap:8px}
   .stat{padding:10px 10px}
   .stat dt{font-size:12px;line-height:1.4}
@@ -215,11 +222,14 @@ footer strong{color:var(--ink)}
     </div>
   </section>
 
-  <footer>
+</main>
+
+<footer>
+  <div class="wrap">
     <p><strong>資料維護人員</strong></p>
     <p id="contactText"></p>
-  </footer>
-</main>
+  </div>
+</footer>
 
 <script>
 /* ================= 設定 ================= */
