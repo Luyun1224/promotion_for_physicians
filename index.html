@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>醫師升等必修課程查詢｜奇美醫院教學部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B1A3A; --navy-2:#1C2E5A; --navy-3:#3A4E80;
+  --orange:#F39220; --orange-2:#F8C27E; --orange-ink:#9A4E00;
+  --paper:#F3F5F9; --card:#FFFFFF; --ink:#16213A; --muted:#5B6680; --line:#DCE1EA;
+  --radius-lg:14px; --radius-sm:6px;
+  --font:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- 查詢區（頁首） ---------- */
+.hero{background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;padding:40px 0 0;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start}
+.stats-panel{display:grid;gap:10px}
+.yearpick{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px}
+.yearpick button{border:1px solid rgba(255,255,255,.28);background:none;color:#C9D2E6;border-radius:999px;padding:3px 0;font-size:14px;cursor:pointer;text-align:center}
+.yearpick button:hover{border-color:#fff;color:#fff}
+.yearpick button[aria-pressed="true"]{background:#fff;color:var(--navy);border-color:#fff;font-weight:700}
+.stat.total dt small{font-size:13px;margin-left:6px;opacity:.8}
+.stats{margin:0;display:grid;gap:10px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:var(--radius-lg);padding:14px 18px}
+.stat dt{font-size:14px;color:#C9D2E6}
+.stat dd{margin:2px 0 0;font-size:15px;color:#C9D2E6}
+.stat dd b{font-size:36px;font-weight:900;color:#fff;margin-right:6px;line-height:1.1}
+.stat.total{background:var(--orange);border-color:var(--orange)}
+.stat.total dt,.stat.total dd{color:#3A1E00}
+.stat.total dd b{color:var(--navy);font-size:48px}
+.skyline{max-width:1200px;margin:28px auto 0;padding:0 24px;line-height:0}
+.skyline img{width:100%;height:auto;display:block}
+.org{font-size:14px;color:#AEB9D3;margin:0 0 8px}
+.hero h1{font-size:clamp(28px,4.4vw,44px);font-weight:900;letter-spacing:.04em;margin:0 0 6px;line-height:1.25}
+.hero .lead{margin:0 0 28px;color:#D4DBEA;max-width:40em}
+.search{position:relative;max-width:680px}
+.search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:22px;height:22px;stroke:var(--navy-3);pointer-events:none}
+.search input{width:100%;height:60px;border:0;border-radius:var(--radius-lg);padding:0 52px 0 54px;font-size:19px;background:#fff;color:var(--ink);box-shadow:0 0 0 4px rgba(243,146,32,0)}
+.search input:focus{outline:none;box-shadow:0 0 0 4px var(--orange)}
+.search input::placeholder{color:#8A93A8}
+.search .clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:none;width:40px;height:40px;border-radius:50%;cursor:pointer;color:var(--muted);font-size:22px;line-height:1;display:none}
+.search .clear:hover{background:var(--paper)}
+.search.has-value .clear{display:block}
+.meta{margin:14px 0 0;font-size:13px;color:#98A5C2}
+
+/* ---------- 查詢結果 ---------- */
+.results{margin-top:28px;display:grid;gap:14px}
+.results:empty{display:none}
+.verdict{background:var(--card);border-radius:var(--radius-lg);padding:22px 24px 20px;border:1px solid var(--line);box-shadow:0 10px 30px -18px rgba(11,26,58,.45)}
+.verdict .who{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.verdict h3{margin:0;font-size:24px;font-weight:700}
+.verdict .facts{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:14px}
+.verdict .line{margin:10px 0 16px;font-size:17px;font-weight:700}
+.verdict.is-both .line{color:var(--navy)}
+.verdict.is-missing .line{color:var(--orange-ink)}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.slot{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:10px;border:2px solid var(--navy);background:#F6F8FC}
+.slot .mark{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:18px;background:var(--navy);color:#fff}
+.slot b{display:block;font-size:16px}
+.slot span.detail{font-size:14px;color:var(--muted)}
+.slot.missing{border:2px dashed var(--orange);background:#FFF8EF}
+.slot.missing .mark{background:var(--orange)}
+.slot.missing span.detail{color:var(--orange-ink)}
+.scope{margin:14px 0 0;font-size:14px;color:var(--muted);padding-top:12px;border-top:1px solid var(--line)}
+.notice{background:var(--card);border-radius:var(--radius-lg);padding:20px 24px;border:1px solid var(--line)}
+.notice p{margin:0}
+.notice p+p{margin-top:6px;color:var(--muted);font-size:14px}
+
+/* ---------- 區塊 ---------- */
+section.block{margin-top:56px}
+.block h2{font-size:22px;margin:0 0 4px;font-weight:700}
+.block .sub{margin:0 0 20px;color:var(--muted);font-size:14px}
+
+
+/* 名單 */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;flex-wrap:wrap;background:#E4E8F0;border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(11,26,58,.15)}
+.toolbar select{height:38px;border:1px solid var(--line);border-radius:8px;padding:0 32px 0 12px;background:#fff;font-size:14px}
+.toolbar .spacer{flex:1}
+.btn{height:38px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);padding:0 16px;font-size:14px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--navy);color:#fff}
+.count{font-size:14px;color:var(--muted);margin:0 0 8px}
+
+.table-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:auto;max-height:620px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+thead th{background:var(--navy);color:#fff;font-weight:500;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#F7F9FC}
+td.c{text-align:center}
+td .yr{display:inline-block;min-width:34px;padding:1px 8px;border-radius:4px;background:#E7ECF6;color:var(--navy);font-weight:500;margin-right:4px}
+td .no{color:#B7BFCF}
+td.name{font-weight:700}
+td .muted{color:var(--muted)}
+.empty-row td{text-align:center;color:var(--muted);padding:32px}
+
+/* 升等規定 */
+.rule{margin-top:28px;display:flex;gap:18px;background:#FFF8EF;border:2px solid var(--orange);border-radius:var(--radius-lg);padding:22px 24px}
+.rule-icon{flex:none;width:44px;height:44px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-weight:900;font-size:24px}
+.rule h2{margin:0 0 6px;font-size:20px;color:var(--orange-ink)}
+.rule p{margin:0 0 12px}
+.rule .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:14px}
+.rule .row>span:first-child{color:var(--muted);min-width:5em}
+.chip{display:inline-block;padding:4px 12px;border-radius:999px;font-size:14px;font-weight:500}
+.chip.course{background:var(--navy);color:#fff}
+.chip.dept{background:#fff;border:1px solid var(--orange-2);color:var(--orange-ink)}
+footer{margin:64px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer p{margin:0 0 6px;max-width:60em}
+footer strong{color:var(--ink)}
+
+.loading{color:#AEB9D3}
+@media (max-width:720px){
+  .wrap{padding:0 16px}
+  .hero{padding:28px 0 0}
+  .hero-grid{grid-template-columns:1fr;gap:20px}
+  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:10px 10px}
+  .stat dt{font-size:12px;line-height:1.4}
+  .stat dd b,.stat.total dd b{font-size:26px;margin-right:2px}
+  .stat dd{font-size:12px}
+  .stat.total dt small{display:block;margin-left:0}
+  .skyline{padding:0 8px;margin-top:20px}
+  .rule{flex-direction:column;gap:10px;padding:18px}
+  .slots{grid-template-columns:1fr}
+  .seg{display:flex;width:100%}
+  .seg button{flex:1;padding:7px 8px}
+  .meta .sep{display:none}
+  .meta .upd{display:block}
+  .toolbar .spacer{display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .verdict{animation:rise .22s ease-out}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+    <p class="org">奇美醫院 教學部臨床技能中心</p>
+    <h1>醫師升等必修課程查詢</h1>
+    <p class="lead">輸入姓名或人事號，立即確認「OSCE考官培訓工作坊」與「一般醫學臨床教師資格」是否都已完成。</p>
+    <div class="search" id="searchBox">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" autocomplete="off" placeholder="例如：王小明 或 A70903" aria-label="輸入姓名或人事號查詢" disabled>
+      <button class="clear" id="clearBtn" type="button" aria-label="清除查詢">×</button>
+    </div>
+    <p class="meta" id="meta"><span class="loading">正在讀取受訓紀錄…</span></p>
+    </div>
+    <aside class="stats-panel">
+    <div class="yearpick" role="group" aria-label="依受訓年度統計" id="yearPick"></div>
+    <dl class="stats" aria-label="受訓人數">
+      <div class="stat total"><dt>受訓總人數<small id="yrLabel">全部年度</small></dt><dd><b class="num" id="nTotal">–</b>位</dd></div>
+      <div class="stat"><dt>OSCE考官培訓工作坊</dt><dd><b class="num" id="nOsce">–</b>位</dd></div>
+      <div class="stat"><dt>一般醫學臨床教師資格</dt><dd><b class="num" id="nGen">–</b>位</dd></div>
+    </dl>
+    </aside>
+  </div>
+  <div class="skyline" aria-hidden="true"><img src="cmh-building.webp" alt=""></div>
+</header>
+
+<main class="wrap">
+  <div class="results" id="results" aria-live="polite"></div>
+
+  <section class="rule" aria-labelledby="ruleTitle">
+    <div class="rule-icon" aria-hidden="true">!</div>
+    <div>
+      <h2 id="ruleTitle">升等規定</h2>
+      <p>依據教師培育中心醫師升等規範，升任<strong>專任主治醫師</strong>需具備以下兩項受訓資格：</p>
+      <div class="row"><span>必備資格</span><span class="chip course">一般醫學訓練師資培訓</span><span class="chip course">OSCE考官培訓工作坊</span></div>
+      <div class="row"><span>適用部門</span><span id="deptChips"></span></div>
+    </div>
+  </section>
+
+  <section class="block" id="rosterBlock" hidden>
+    <h2>受訓名單</h2>
+    <p class="sub">每人一列，格子內為受訓年度（民國年），「—」表示查無該課程紀錄。</p>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="課程類別" id="courseSeg">
+        <button type="button" data-v="all" aria-pressed="true">全部</button>
+        <button type="button" data-v="osce" aria-pressed="false">OSCE考官培訓工作坊</button>
+        <button type="button" data-v="gen" aria-pressed="false">一般醫學臨床教師資格</button>
+      </div>
+      <select id="deptSel" aria-label="部門"></select>
+      <select id="yearSel" aria-label="受訓年度"></select>
+      <span class="spacer"></span>
+      <button class="btn" type="button" id="exportBtn">匯出目前名單 (CSV)</button>
+    </div>
+    <p class="count num" id="count"></p>
+    <div class="table-box">
+      <table>
+        <thead><tr>
+          <th>姓名</th><th>人事號</th><th>部門</th><th>職稱</th>
+          <th>OSCE考官培訓工作坊</th><th>一般醫學臨床教師資格</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>資料維護人員</strong></p>
+    <p id="contactText"></p>
+  </footer>
+</main>
+
+<script>
+/* ================= 設定 ================= */
+// 貼上 Apps Script 部署後的網頁應用程式網址（結尾為 /exec）
+const API_URL = 'https://script.google.com/macros/s/AKfycbyCtM_OeGehPHX6JWMZiKOtznapofely51tv347ZJLaegC3svYzRLdtJ8mrN7v3LuF3/exec';
+
+// 資料維護窗口（顯示在頁尾與查無資料時）
+const CONTACTS = [
+  { course: 'OSCE考官培訓工作坊', who: '教學部 盧英云 教學行政管理員', ext: '57425' },
+  { course: '一般醫學臨床教師資格', who: '教學部 黃貞琳 教學行政管理員', ext: '57427' },
+];
+const MAX_CARDS = 6;
+
+/* ================= 狀態 ================= */
+const state = { cfg: null, people: [], course: 'all', dept: 'all', year: 'all' };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ================= 讀取資料 ================= */
+async function loadData() {
+  if (window.DEMO_DATA) return window.DEMO_DATA;
+  if (!API_URL) throw new Error('尚未設定 API_URL，請將 Apps Script 的 /exec 網址填入 index.html');
+  const res = await fetch(API_URL, { redirect: 'follow' });
+  if (!res.ok) throw new Error('伺服器回應 ' + res.status);
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || '資料讀取失敗');
+  return json;
+}
+
+function buildPeople(records, cfg) {
+  const map = new Map();
+  for (const r of records) {
+    let p = map.get(r.id);
+    if (!p) {
+      p = { id: r.id, name: r.name, division: r.division, dept: r.dept, title: r.title, osce: [], gen: [], _y: -1 };
+      map.set(r.id, p);
+    }
+    // 以最新年度的紀錄作為目前的姓名、部門、職稱
+    if ((r.year || 0) >= p._y) {
+      Object.assign(p, { name: r.name || p.name, division: r.division || p.division, dept: r.dept || p.dept, title: r.title || p.title, _y: r.year || 0 });
+    }
+    if (r.course === cfg.courseOsce) p.osce.push({ year: r.year, date: r.date });
+    else if (r.course === cfg.courseGen) p.gen.push({ year: r.year, date: r.date });
+  }
+  const people = [...map.values()];
+  for (const p of people) {
+    p.osce.sort((a, b) => a.year - b.year);
+    p.gen.sort((a, b) => a.year - b.year);
+    p.inScope = cfg.requiredDepts.includes(p.division);
+    p.years = new Set([...p.osce, ...p.gen].map(x => x.year));
+    p._key = (p.name + ' ' + p.id).toLowerCase();
+  }
+  people.sort((a, b) =>
+    (a.inScope === b.inScope ? 0 : a.inScope ? -1 : 1) ||
+    a.division.localeCompare(b.division, 'zh-Hant') ||
+    a.name.localeCompare(b.name, 'zh-Hant'));
+  return people;
+}
+
+/* ================= 個人查詢 ================= */
+function slotHTML(course, list) {
+  if (!list.length) {
+    return `<div class="slot missing"><span class="mark" aria-hidden="true">!</span>
+      <div><b>${esc(course)}</b><span class="detail">查無受訓紀錄</span></div></div>`;
+  }
+  const detail = list.map(x => `${x.year} 年度${x.date ? `（${esc(x.date)} 上課）` : ''}`).join('、');
+  return `<div class="slot done"><span class="mark" aria-hidden="true">✓</span>
+    <div><b>${esc(course)}</b><span class="detail">已完成，${detail}</span></div></div>`;
+}
+
+function verdictHTML(p) {
+  const cfg = state.cfg;
+  const missing = [];
+  if (!p.osce.length) missing.push(cfg.courseOsce);
+  if (!p.gen.length) missing.push(cfg.courseGen);
+  const line = missing.length ? `尚缺 1 項：${esc(missing[0])}` : '兩項必修課程皆已完成';
+  const scope = p.inScope
+    ? ''
+    : `<p class="scope">所屬部門（${esc(p.division || '未註記')}）不在本項升等規定的適用範圍內，以上紀錄僅供參考。</p>`;
+  return `<article class="verdict ${missing.length ? 'is-missing' : 'is-both'}">
+    <div class="who"><h3>${esc(p.name)}</h3>
+      <div class="facts"><span class="num">${esc(p.id)}</span><span>${esc(p.division)}${p.dept && p.dept !== p.division ? '／' + esc(p.dept) : ''}</span><span>${esc(p.title)}</span></div>
+    </div>
+    <p class="line">${line}</p>
+    <div class="slots">${slotHTML(cfg.courseOsce, p.osce)}${slotHTML(cfg.courseGen, p.gen)}</div>
+    ${scope}
+  </article>`;
+}
+
+function contactLine() {
+  return CONTACTS.map(c => `${esc(c.course)}：${esc(c.who)}（${esc(c.ext)}）`).join('；');
+}
+
+function runSearch() {
+  const raw = $('q').value.trim();
+  $('searchBox').classList.toggle('has-value', !!raw);
+  const box = $('results');
+  if (!raw) { box.innerHTML = ''; return; }
+  const q = raw.toLowerCase();
+  const hits = state.people.filter(p => p._key.includes(q));
+  // 完全符合姓名或人事號者排最前
+  hits.sort((a, b) => ((b.name === raw || b.id === raw.toUpperCase()) - (a.name === raw || a.id === raw.toUpperCase())));
+  if (!hits.length) {
+    box.innerHTML = `<div class="notice"><p>查無「${esc(raw)}」的受訓紀錄，代表兩項課程目前都沒有登錄資料。</p>
+      <p>請確認姓名或人事號是否正確；若確定已參加課程，請聯絡 ${contactLine()}。</p></div>`;
+    return;
+  }
+  let html = hits.slice(0, MAX_CARDS).map(verdictHTML).join('');
+  if (hits.length > MAX_CARDS) {
+    html += `<div class="notice"><p>另有 ${hits.length - MAX_CARDS} 位符合，請輸入完整姓名或人事號縮小範圍。</p></div>`;
+  }
+  box.innerHTML = html;
+}
+
+/* ================= 名單 ================= */
+function filtered() {
+  return state.people.filter(p => {
+    const recs = state.course === 'all' ? [...p.osce, ...p.gen] : p[state.course];
+    return recs.length &&
+      (state.dept === 'all' || (p.division || '未註記') === state.dept) &&
+      (state.year === 'all' || recs.some(x => x.year === +state.year));
+  });
+}
+const yrCell = list => list.length ? list.map(x => `<span class="yr num">${x.year}</span>`).join('') : '<span class="no">—</span>';
+
+function renderRoster() {
+  const list = filtered();
+  $('count').textContent = `共 ${list.length} 人`;
+  $('tbody').innerHTML = list.length ? list.map(p => `<tr>
+    <td class="name">${esc(p.name)}</td>
+    <td class="num">${esc(p.id)}</td>
+    <td>${esc(p.division)}<span class="muted">${p.dept && p.dept !== p.division ? '／' + esc(p.dept) : ''}</span></td>
+    <td>${esc(p.title)}</td>
+    <td>${yrCell(p.osce)}</td>
+    <td>${yrCell(p.gen)}</td>
+  </tr>`).join('') : `<tr class="empty-row"><td colspan="6">目前的篩選條件下沒有人員，請放寬課程、部門或年度。</td></tr>`;
+}
+
+function fillSelects() {
+  const divs = [...new Set(state.people.map(p => p.division || '未註記'))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+  $('deptSel').innerHTML = `<option value="all">全部部門</option>` + divs.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  const years = [...new Set(state.people.flatMap(p => [...p.years]))].filter(Boolean).sort((a, b) => b - a);
+  $('yearSel').innerHTML = `<option value="all">全部年度</option>` + years.map(y => `<option value="${y}">${y} 年度</option>`).join('');
+  $('yearPick').innerHTML = `<button type="button" data-y="all" aria-pressed="true">全部</button>` +
+    [...years].reverse().map(y => `<button type="button" data-y="${y}" aria-pressed="false" class="num">${y}</button>`).join('');
+}
+
+/* 頁首人數：依選取年度統計（同一人只算一次） */
+function renderStats() {
+  const y = state.year === 'all' ? null : +state.year;
+  const inYear = list => y === null ? list.length > 0 : list.some(x => x.year === y);
+  $('nTotal').textContent = state.people.filter(p => inYear(p.osce) || inYear(p.gen)).length;
+  $('nOsce').textContent = state.people.filter(p => inYear(p.osce)).length;
+  $('nGen').textContent = state.people.filter(p => inYear(p.gen)).length;
+  $('yrLabel').textContent = y === null ? '全部年度' : `${y} 年度`;
+}
+
+function setYear(y) {
+  state.year = y;
+  $('yearSel').value = y;
+  $('yearPick').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.y === y));
+  renderStats();
+  renderRoster();
+}
+
+function setDept(d) {
+  state.dept = d;
+  renderRoster();
+}
+
+function exportCSV() {
+  const head = ['姓名', '人事號', '大部門', '部門', '職稱', 'OSCE考官培訓工作坊(年度)', '一般醫學臨床教師資格(年度)'];
+  const rows = filtered().map(p => [p.name, p.id, p.division, p.dept, p.title,
+    p.osce.map(x => x.year).join('、'), p.gen.map(x => x.year).join('、')]);
+  const csv = [head, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `醫師升等課程名單_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ================= 啟動 ================= */
+async function init() {
+  $('contactText').innerHTML = CONTACTS.map(c => `${esc(c.course)}：${esc(c.who)}（${esc(c.ext)}）`).join('<br>');
+  try {
+    const data = await loadData();
+    state.cfg = data.config;
+    state.people = buildPeople(data.records, data.config);
+    $('deptChips').innerHTML = data.config.requiredDepts.map(d => `<span class="chip dept">${esc(d)}</span>`).join(' ');
+
+    const yrs = data.records.map(r => r.year).filter(Boolean);
+    $('meta').innerHTML = `資料涵蓋 ${Math.min(...yrs)}–${Math.max(...yrs)} 年度，共 ${state.people.length} 位醫師的受訓紀錄<span class="sep">　｜　</span><span class="upd">更新時間 ${esc(data.generatedAt || '—')}</span>`;
+
+    const q = $('q');
+    q.disabled = false;
+    q.addEventListener('input', runSearch);
+    $('clearBtn').addEventListener('click', () => { q.value = ''; runSearch(); q.focus(); });
+
+    fillSelects();
+    renderStats();
+    renderRoster();
+    $('rosterBlock').hidden = false;
+
+    $('courseSeg').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      state.course = b.dataset.v;
+      $('courseSeg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+      renderRoster();
+    });
+    $('deptSel').addEventListener('change', e => setDept(e.target.value));
+    $('yearSel').addEventListener('change', e => setYear(e.target.value));
+    $('yearPick').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setYear(b.dataset.y); });
+    $('exportBtn').addEventListener('click', exportCSV);
+
+    // 支援網址帶參數直接查詢，例如 index.html?q=A70903
+    const pre = new URLSearchParams(location.search).get('q');
+    if (pre) { q.value = pre; runSearch(); } else { q.focus(); }
+  } catch (err) {
+    $('meta').textContent = '';
+    $('results').innerHTML = `<div class="notice"><p>無法讀取受訓紀錄：${esc(err.message)}</p>
+      <p>請確認 API_URL 是否為最新部署的 /exec 網址，且存取權設定為「任何人」。</p></div>`;
+  }
+}
+init();
+</script>
+</body>
+</html>
